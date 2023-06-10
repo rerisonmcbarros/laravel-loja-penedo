@@ -41,4 +41,10 @@ class Product extends Model
     {
         return $this->belongsTo(Category::class, 'category_id', 'id');
     }
+
+    public function reduceStorage(int $quantity): void
+    {
+        $this->storage -= $quantity;
+        $this->save();
+    }
 }
