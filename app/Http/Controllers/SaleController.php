@@ -9,19 +9,21 @@ use App\Models\SaleItem;
 use Illuminate\Support\Facades\DB;
 use App\Http\Requests\StoreSaleRequest;
 use Illuminate\Support\Facades\Session;
-use App\Http\Requests\getSalesByPeriodSaleRequest;
+use App\Http\Requests\GetSalesByPeriodSaleRequest;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 
 class SaleController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(): View
     {
         try {
             $sales = Sale::orderByDesc('created_at')->paginate(15);
         } catch (Exception $e) {
-            $message = "Erro, não foi possível obter a lista de Vendas";
+            $message = "Erro, não foi possível obter a lista de vendas";
         }
 
         return view('sale.list', [
@@ -34,11 +36,12 @@ class SaleController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(): View|RedirectResponse
     {
         $cart = new Cart();
 
         if (empty($cart->getItems())) {
+            Session::flash('message', 'Não é possível regitrar venda com o carrinho vazio');
             return redirect()->route('cart.index');
         }
 
@@ -51,7 +54,7 @@ class SaleController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreSaleRequest $request)
+    public function store(StoreSaleRequest $request): RedirectResponse
     {
         try {
             $cart = new Cart();
@@ -86,33 +89,34 @@ class SaleController extends Controller
             }
 
             $cart->reset();
-            $message = 'Venda Registrada com sucesso!';
+            $message = 'Venda Registrada com sucesso';
             DB::commit();
 
         } catch (Exception $e) {
-            $message = 'Erro, falha ao registrar venda!';
+            $message = 'Erro, falha ao registrar venda';
             DB::rollBack();
         }
 
         Session::flash('message', $message);
 
-        return redirect()->route('cart.index');
+        return redirect()->route('sales.index');
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(string $id): View|RedirectResponse
     {
         try {
             $sale = Sale::query()->with('items')->find($id);
 
             if (empty($sale)) {
-                throw new Exception('Não foi possível obter os detalhes da venda.');
+                Session::flash('message', 'Não foi possível obter os detalhes da venda');
+                return redirect()->route('sales.index');
             }
 
         } catch (Exception $e) {
-            Session::flash('message', $e->getMessage());
+            Session::flash('message', 'Erro, falha ao obter os detalhes da venda');
             return redirect()->route('sales.index');
         }
 
@@ -125,22 +129,23 @@ class SaleController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(string $id): RedirectResponse
     {
         try {
             DB::beginTransaction();
             $sale = Sale::query()->find($id);
 
             if (empty($sale)) {
-                throw new Exception('Não foi possível remover a venda da lista');
+                Session::flash('A venda informada não foi encontrada');
+                return redirect()->route('sales.index');
             }
 
             $sale->delete();
            
-            $message = 'Venda removida com sucesso!';
+            $message = 'Venda removida com sucesso';
             DB::commit();
         } catch (Exception $e) {
-            $message = $e->getMessage();
+            $message = 'Erro, falha ao remover registro de venda';
             DB::rollBack();
         }
 
@@ -149,16 +154,17 @@ class SaleController extends Controller
         return redirect()->route('sales.index');
     }
 
-    public function getSalesByPeriod(getSalesByPeriodSaleRequest $request)
+    public function getSalesByPeriod(GetSalesByPeriodSaleRequest $request): View|RedirectResponse
     {
         try {
             $sales = Sale::query()
             ->whereDate('created_at', '>=', $request->get('data_inicio'))
             ->whereDate('created_at', '<=', $request->get('data_fim'))
-            ->orderByDesc('created_at')->paginate(1);
+            ->orderByDesc('created_at')->paginate(15);
 
-            if (count($sales->items()) < 1) {
-                throw new Exception('Nenhuma venda encontrada para o período informado');
+            if ($sales->total() < 1) {
+                Session::flash('message', 'Nenhuma venda encontrada para o período informado');
+                return redirect()->route('sales.index');
             }
 
             $sales->appends([
@@ -166,10 +172,10 @@ class SaleController extends Controller
                 'data_fim' => $request->get('data_fim'),
             ]);
 
-            $message = "Vendas encontradas para o período informado.";
+            $message = "Vendas encontradas para o período informado";
         } catch (Exception $e) {
-           Session::flash('message', $e->getMessage());
-           return redirect()->route('sales.index');
+            Session::flash('message', 'Erro, falha ao buscar vendas por período');
+            return redirect()->route('sales.index');
         }
 
         return view('sale.list', [

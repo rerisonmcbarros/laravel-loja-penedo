@@ -3,15 +3,16 @@
 namespace App\Http\Controllers;
 
 use Exception;
-use PDOException;
 use App\Models\Cart;
 use App\Models\Product;
+use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Session;
-use App\Http\Requests\addItemCartRequest;
+use App\Http\Requests\AddItemCartRequest;
+use Illuminate\Http\RedirectResponse;
 
 class CartController extends Controller
 {
-    public function index()
+    public function index(): View
     {
         Session::regenerate();  
         $cart = new Cart();
@@ -22,29 +23,29 @@ class CartController extends Controller
         ]);
     }
 
-    public function addItem(addItemCartRequest $request)
+    public function addItem(AddItemCartRequest $request): RedirectResponse
     {
         try {
 
             $product = Product::query()->where('code', '=', $request->get('product_code'))->first();
 
             if (empty($product)) {
-                throw new Exception('Produto não encontrado em estoque!');
+                Session::flash('message', 'Produto não encontrado em estoque');
+                return redirect()->route('cart.index');
             }
 
             if ($product->storage == 0 || $product->storage < $request->get('quantity')) {
-                throw new Exception('Não foi possível adicionar o item, estoque do produto insuficiente!');
+                Session::flash('message', 'Não foi possível adicionar o item, estoque do produto insuficiente');
+                return redirect()->route('cart.index');
             }
 
             $cart = new Cart();
             $cart->addItem($product, $request->get('quantity'));
 
-            $message = 'Produto adicionado ao Carrinho de Compras!';
+            $message = 'Produto adicionado ao Carrinho de Compras';
 
-        } catch (PDOException $e) {
-            $message = 'Erro, ao adicionar produto ao Carrinho de Compras!';    
         } catch (Exception $e) {
-            $message = $e->getMessage();
+            $message = 'Erro, falha ao adicionar produto ao Carrinho de Compras';    
         }
         
         Session::flash('message', $message);
@@ -52,19 +53,20 @@ class CartController extends Controller
         return redirect()->route('cart.index');
     }
 
-    public function removeItem($id)
+    public function removeItem($id): RedirectResponse
     {
         try {
             $cart = new Cart();
 
             if (!$cart->hasItem($id)) {
-                throw new Exception('Erro, item não encontrado no carrinho de compras');
+                Session::flash('message', 'Item não encontrado no carrinho de compras');
+                return redirect()->route('cart.index');
             }
 
+            Session::flash('message','Item removido do carrinho');
             $cart->removeItem($id);
         } catch (Exception $e) {
-            $message = $e->getMessage();
-            Session::flash('message', $message);
+            Session::flash('message', 'Erro, falha ao remover item do carrinho');
         }
 
         return redirect()->route('cart.index');

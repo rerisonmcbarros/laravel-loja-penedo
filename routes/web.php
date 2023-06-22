@@ -66,9 +66,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
     //Rotas de Recursos de Vendas
     Route::controller(CartController::class)->group(function () {
-        Route::get('cart', 'index')->name('cart.index');
-        Route::post('cart', 'addItem')->name('cart.addItem');
-        Route::delete('cart/{item}', 'removeItem')->name('cart.removeItem');
+        Route::get('carrinho-de-compras', 'index')->name('cart.index');
+        Route::post('carrinho-de-compras', 'addItem')->name('cart.addItem');
+        Route::delete('carrinho-de-compras/{item}', 'removeItem')->name('cart.removeItem');
     });
 
     Route::controller(SaleController::class)->group(function () {

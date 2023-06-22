@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class getSalesByPeriodSaleRequest extends FormRequest
+class GetSalesByPeriodSaleRequest extends FormRequest
 {
     protected $redirectRoute = 'sales.index';
     /**
@@ -28,19 +28,11 @@ class getSalesByPeriodSaleRequest extends FormRequest
         ];
     }
 
-    public function messages(): array
-    {
-        return [
-            'required' => 'O campo :attribute não pode ser vazio.',
-            'date' => 'O campo :attribute deve ser uma data'
-        ];        
-    }
-
-    public function attributes()
+    public function attributes(): array
     {
         return [
             'data_inicio' => 'data início',
-            'data_fim' => 'data_fim'
+            'data_fim' => 'data fim'
         ];
     }
 }
