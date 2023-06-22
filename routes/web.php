@@ -4,18 +4,35 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\SaleController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\PurchaseSessionController;
 
+//Rotas de Recursos de Autenticação
 Route::controller(AuthController::class)->group(function () {
-    Route::get('login', 'login')->name('auth.login');
+    Route::get('/', 'login')->name('auth.login');
     Route::post('login/do', 'attempt')->name('auth.attempt');
     Route::get('logout', 'logout')->name('auth.logout');
 });
 
 Route::middleware(['auth:sanctum'])->group(function () {
+
+    //Rotas de Recursos de Usuários
+    Route::middleware('is_admin')->resource('usuarios', UserController::class)->except([
+        'show'
+    ])->names([
+        'index' => 'users.index',
+        'store' => 'users.store',
+        'create' => 'users.create',
+        'update' => 'users.update',
+        'destroy' => 'users.destroy',
+        'edit' => 'users.edit',
+    ])->parameters([
+        'usuarios' => 'user'
+    ]);
+
     //Rotas de Recursos de Categorias
     Route::resource('categorias', CategoryController::class)->except([
         'show'
