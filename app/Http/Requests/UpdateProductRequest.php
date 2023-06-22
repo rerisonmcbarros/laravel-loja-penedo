@@ -2,11 +2,12 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreProductRequest extends FormRequest
+class UpdateProductRequest extends FormRequest
 {
-    protected $redirectRoute = 'products.create';
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -22,9 +23,10 @@ class StoreProductRequest extends FormRequest
      */
     public function rules(): array
     {
+        $id = Route::getCurrentRoute()->parameter('product');
         return [
             'category_id' => ['required'],
-            'code' => ['required', 'unique:products', 'numeric', 'max:255'],
+            'code' => ['required', Rule::unique('products', 'code')->ignore($id), 'numeric', 'max:255'],
             'description' => ['required', 'max:255'],
             'purchase_price' => ['required', 'numeric'],
             'sale_price' => ['required', 'numeric'],
@@ -40,7 +42,7 @@ class StoreProductRequest extends FormRequest
             'description' => 'descrição',
             'purchase_price' => 'preço de compra',
             'sale_price' => 'preço de venda',
-            'storage' => 'quantidade',
+            'storage' => 'estoque',
         ];
     }
 }

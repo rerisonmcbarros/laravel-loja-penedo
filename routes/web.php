@@ -48,6 +48,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
     ]);
 
     //Rotas de Recursos de Produtos
+    Route::get('/produtos/por-categoria', [ProductController::class, 'findByCategory'])
+    ->name('products.by.category');
+
     Route::resource('produtos', ProductController::class)->except([
         'show'
     ])->names([

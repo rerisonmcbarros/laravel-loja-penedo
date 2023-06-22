@@ -3,7 +3,7 @@
 @section('content')
     <h1>Lista de Produtos</h1>
     <div>
-        <form action="{{ route('products.index') }}" method="GET">
+        <form action="{{ route('products.by.category') }}" method="GET">
             <div>
                 <label for="find-by-category">Buscar por Categoria</label>
                 <select name="categoria" id="find-by-category">
