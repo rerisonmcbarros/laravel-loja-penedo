@@ -2,12 +2,12 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreCategoryRequest extends FormRequest
+class UpdateCategoryRequest extends FormRequest
 {
-    
-    protected $redirectRoute = 'categories.create'; 
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -23,26 +23,27 @@ class StoreCategoryRequest extends FormRequest
      */
     public function rules(): array
     {
+        $id = Route::getCurrentRoute()->parameter('category');
+
         return [
             'code' => [
                 'required',
                 'numeric',
-                'unique:categories'
+                Rule::unique('categories', 'code')->ignore($id)
             ],
             'name' => [
                 'required',
-                'min:2',
                 'max:255',
-                'unique:categories'
+                Rule::unique('categories', 'name')->ignore($id)
             ]
         ];
     }
 
-    public function attributes()
+    public function attributes(): array
     {
         return [
             'code' => 'código',
-            'name' => 'nome',
-        ];
+            'name' => 'nome'
+        ];        
     }
 }
