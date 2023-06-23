@@ -28,15 +28,7 @@ class GetPurchasesByPeriodRequest extends FormRequest
         ];
     }
 
-    public function messages(): array
-    {
-        return [
-            'required' => 'O campo :attribute não pode ser vazio.',
-            'date' => 'O campo :attribute deve ser uma data'
-        ];        
-    }
-
-    public function attributes()
+    public function attributes(): array
     {
         return [
             'data_inicio' => 'data início',

@@ -2,14 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\GetPurchasesByPeriodRequest;
-use App\Http\Requests\StorePurchaseRequest;
 use Exception;
 use App\Models\Purchase;
 use App\Models\PurchaseItem;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use App\Models\PurchaseSessionHandler;
 use Illuminate\Support\Facades\Session;
+use App\Http\Requests\StorePurchaseRequest;
+use App\Http\Requests\GetPurchasesByPeriodRequest;
 
 class PurchaseController extends Controller
 {
@@ -17,12 +19,12 @@ class PurchaseController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(): View
     {   
         try {
             $purchases = Purchase::orderByDesc('id')->paginate(15);
         } catch (Exception $e) {
-            $message = 'Erro, não foi possível obter a lista de Compras.';
+            $message = 'Erro, não foi possível obter a lista de Compras';
         }
         return view('purchase.list', [
             'title' => 'Penedo | Lista de Compras',
@@ -34,7 +36,7 @@ class PurchaseController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StorePurchaseRequest $request)
+    public function store(StorePurchaseRequest $request): RedirectResponse
     {
         try {
      
@@ -68,7 +70,7 @@ class PurchaseController extends Controller
             DB::commit();
 
         } catch (Exception $e) { 
-            Session::flash('message', 'Não foi possível fazer o registro de compra');
+            Session::flash('message', 'Erro, Não foi possível fazer o registro de compra');
             DB::rollBack();
             return redirect()->route('purchases.create'); 
         }
@@ -79,7 +81,7 @@ class PurchaseController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(string $id): RedirectResponse|View
     {
         try {
             $purchase = Purchase::query()->where('id', $id)->with('items')->first();
@@ -102,31 +104,31 @@ class PurchaseController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(string $id): RedirectResponse
     {
         try {
             $purchase = Purchase::find($id);
 
             if (empty($purchase)) {
-                Session::flash('message', 'Não foi possível remover, compra não encontrada.');
+                Session::flash('message', 'Não foi possível remover, compra não encontrada');
                 return redirect()->route('purchases.index');
             }
             DB::beginTransaction();
             
             $purchase->delete();
 
-            Session::flash('message', 'Registro de compra removido com sucesso.');
+            Session::flash('message', 'Registro de compra removido com sucesso');
 
             DB::commit();
         } catch (Exception $e) {
-            Session::flash('message', 'Error, não foi possível remover registro.');
+            Session::flash('message', 'Erro, não foi possível remover registro');
             return redirect()->route('purchases.index');
         } 
         
         return redirect()->route('purchases.index');
     }
     
-    public function getPurchasesByPeriod(GetPurchasesByPeriodRequest $request)
+    public function getPurchasesByPeriod(GetPurchasesByPeriodRequest $request): RedirectResponse|View
     {
         try {
             $purchases = Purchase::query()
@@ -134,7 +136,7 @@ class PurchaseController extends Controller
             ->whereDate('created_at', '<=', $request->get('data_fim'))
             ->orderByDesc('created_at')->paginate(15);
 
-            if (count($purchases->items()) < 1) {
+            if ($purchases->total() < 1) {
                 Session::flash('message', 'Nenhuma compra encontrada para o período informado');
                 return redirect()->route('purchases.index');
             }
@@ -144,7 +146,7 @@ class PurchaseController extends Controller
                 'data_fim' => $request->get('data_fim'),
             ]);
 
-            $message = "Compras encontradas para o período informado.";
+            $message = "Compras encontradas para o período informado";
         } catch (Exception $e) {
            Session::flash('message', 'Erro, não foi possível realizar a solicitação');
            return redirect()->route('purchases.index');

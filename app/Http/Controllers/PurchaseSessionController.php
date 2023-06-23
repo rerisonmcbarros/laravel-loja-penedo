@@ -6,11 +6,13 @@ use App\Http\Requests\AddItemPurchaseRequest;
 use App\Models\PurchaseItemSessionHandler;
 use Exception;
 use App\Models\PurchaseSessionHandler;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Session;
 
 class PurchaseSessionController extends Controller
 {
-    public function create()
+    public function create(): View
     {
         Session::regenerate();
         $purchase = new PurchaseSessionHandler();
@@ -20,7 +22,7 @@ class PurchaseSessionController extends Controller
         ]);
     }
 
-    public function addItem(AddItemPurchaseRequest $request)
+    public function addItem(AddItemPurchaseRequest $request): RedirectResponse
     {
         try {
 
@@ -35,10 +37,10 @@ class PurchaseSessionController extends Controller
 
             $purchaseHandler->addItem($itemHandler);
 
-            $message = 'Item adicionado com sucesso!';
+            $message = 'Item adicionado com sucesso';
             
         } catch (Exception $e) {
-            $message = 'Erro, Não foi possível adicionar o item à compra.';
+            $message = 'Erro, Não foi possível adicionar o item à compra';
         }
 
         Session::flash('message', $message);
@@ -46,17 +48,17 @@ class PurchaseSessionController extends Controller
         return redirect()->route('purchases.create');
     }
 
-    public function removeItem($code)
+    public function removeItem($code): RedirectResponse
     {
         try {
             $purchaseHandler = new PurchaseSessionHandler();
             if (!$purchaseHandler->hasItem($code)) {
-                throw new Exception('Erro, não foi possível remover, item não encontrado.');
+                throw new Exception('Erro, não foi possível remover, item não encontrado');
             }
 
             $purchaseHandler->removeItem($code);
 
-            $message = 'Item removido com sucesso.';
+            $message = 'Item removido com sucesso';
 
         } catch (Exception $e) {
             $message = $e->getMessage();
