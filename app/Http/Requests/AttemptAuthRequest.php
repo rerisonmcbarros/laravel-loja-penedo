@@ -29,16 +29,6 @@ class AttemptAuthRequest extends FormRequest
         ];
     }
 
-    public function messages(): array
-    {
-        return [
-            'required' => 'O campo :attribute é obrigatório',
-            'email' => 'O campo :attribute não possui um formato válido exemple@email.com.',
-            'max' => 'O campo :attribute deve ter no máximo :max caracteres.',
-            'min' => 'O campo :attribute deve ter no mínimo :min caracteres.',
-        ];
-    }
-
     public function attributes(): array
     {
         return [
