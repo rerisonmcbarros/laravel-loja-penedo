@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,9 +7,9 @@
     <title>{{ $title }}</title>
     @vite('resources/css/app.css')
 </head>
-<body class="w-screen bg-neutral-100 overflow-y-auto">
+<body class="w-screen bg-neutral-100 overflow-y-auto overflow-x-hidden">
     <header class="w-screen bg-neutral-900">
-        <div class="fixed top-0 w-full h-20 flex items-center justify-between z-10 bg-neutral-900">
+        <div class="fixed top-0 w-full h-20 flex items-center justify-between z-10 bg-neutral-900 shadow-md shadow-neutral-400">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="sm:hidden ms-4 p-1 w-14 h-14 text-neutral-100 rounded-sm cursor-pointer">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
             </svg>
@@ -27,8 +27,8 @@
                 </a>
             </div>   
         </div>
-        <div class="fixed top-20 w-3/4  -ms-[75%] sm:ms-0 sm:w-[15.5%] md:w-[25%] lg:w-[20%] h-[calc(100vh-5rem)] sm:pt-10  sm:p-2 bg-neutral-900 overflow-y-auto z-10">
-            <ul class="w-full p-">
+        <div class="fixed top-20 w-3/4 sm:w-[15.5%] md:w-[25%] lg:w-[20%] h-[calc(100vh-5rem)] -ms-[75%] sm:ms-0 p-2 sm:pt-10 sm:p-2 bg-neutral-900 overflow-y-auto z-10">
+            <ul class="w-full">
                 <li class="w-full rounded-md hover:bg-neutral-800 text-slate-200 hover:text-slate-50"> 
                     <a href="{{ route('categories.index') }}" class="flex items-center w-full py-5 sm:py-4 sm:text-sm md:text-base">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-6 sm:w-8 sm:h-8 ms-4 sm:ms-7 md:ms-4">
@@ -89,7 +89,7 @@
                 </li>
             </ul>
             <hr class="my-4 border border-neutral-800 sm:hidden">
-            <div class="ms-4 sm:hidden text-neutral-100 mr-10 cursor-pointer">
+            <div class="ms-4 my-4 sm:hidden text-neutral-100 cursor-pointer">
                 <a href="{{ route('auth.logout') }}" class="flex items-center">
                     <p class="mx-2">Sair</p>
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="w-8 h-8" viewBox="0 0 16 16">
@@ -100,7 +100,7 @@
             </div>  
         </div>  
     </header>
-    <main class="sm:float-right sm:w-[84.5%] md:w-[75%] lg:w-[80%] mt-20 h-[calc(100vh-5rem)] sm:p-10 bg-neutral-100 border">
+    <main class="sm:float-right w-screen sm:w-[84.5%] md:w-[75%] lg:w-[80%] mt-20 pt-8 px-2 sm:p-10 bg-neutral-100">
         @yield('content')
     </main>
 </body>
