@@ -17,33 +17,36 @@
                 @endforeach
             @enderror
         </div>
-        <div>
-            <label for="total_value" class="block text-neutral-900 mb-2">Valor Total</label>
-            <input readonly type="text" id="total_value" name="total_value" value="{{ $cart->getTotal() }}" class="w-full p-2 rounded-md border-0 outline-0 ring-1 ring-inset ring-gray-300 focus:ring focus:ring-inset focus:ring-neutral-800  text-gray-600 mb-4">
-            @error('total_value')
-                @foreach($errors->get('total_value') as $error)
-                    <div class="-mt-4 mb-3 font-light text-red-500 text-sm">{{ $error }}</div>
-                @endforeach
-            @enderror
+        <div class="sm:flex">
+            <div class="sm:w-1/4 sm:me-4">
+                <label for="total_value" class="block text-neutral-900 mb-2">Valor Total</label>
+                <input readonly type="text" id="total_value" name="total_value" value="{{ $cart->getTotal() }}" class="w-full p-2 rounded-md border-0 outline-0 ring-1 ring-inset ring-gray-300 focus:ring focus:ring-inset focus:ring-neutral-800  text-gray-600 mb-4">
+                @error('total_value')
+                    @foreach($errors->get('total_value') as $error)
+                        <div class="-mt-4 mb-3 font-light text-red-500 text-sm">{{ $error }}</div>
+                    @endforeach
+                @enderror
+            </div>
+            <div class="sm:w-1/4 sm:me-4">
+                <label for="discount" class="block text-neutral-900 mb-2">Desconto</label>
+                <input type="text" id="discount" name="discount" value="{{ old('discount') }}" class="w-full p-2 rounded-md border-0 outline-0 ring-1 ring-inset ring-gray-300 focus:ring focus:ring-inset focus:ring-neutral-800  text-gray-600 mb-4">
+                @error('discount')
+                    @foreach($errors->get('discount') as $error)
+                        <div class="-mt-4 mb-3 font-light text-red-500 text-sm">{{ $error }}</div>
+                    @endforeach
+                @enderror
+            </div>
+            <div class="sm:w-2/4">
+                <label for="payment" class="block text-neutral-900 mb-2">Pagamento</label>
+                <input type="text" id="payment" name="payment" value="{{ old('payment') }}" class="w-full p-2 rounded-md border-0 outline-0 ring-1 ring-inset ring-gray-300 focus:ring focus:ring-inset focus:ring-neutral-800  text-gray-600 mb-4">
+                @error('payment')
+                    @foreach($errors->get('payment') as $error)
+                        <div class="-mt-4 mb-3 font-light text-red-500 text-sm">{{ $error }}</div>
+                    @endforeach
+                @enderror
+            </div>
         </div>
-        <div>
-            <label for="discount" class="block text-neutral-900 mb-2">Desconto</label>
-            <input type="text" id="discount" name="discount" value="{{ old('discount') }}" class="w-full p-2 rounded-md border-0 outline-0 ring-1 ring-inset ring-gray-300 focus:ring focus:ring-inset focus:ring-neutral-800  text-gray-600 mb-4">
-            @error('discount')
-                @foreach($errors->get('discount') as $error)
-                    <div class="-mt-4 mb-3 font-light text-red-500 text-sm">{{ $error }}</div>
-                @endforeach
-            @enderror
-        </div>
-        <div>
-            <label for="payment" class="block text-neutral-900 mb-2">Pagamento</label>
-            <input type="text" id="payment" name="payment" value="{{ old('payment') }}" class="w-full p-2 rounded-md border-0 outline-0 ring-1 ring-inset ring-gray-300 focus:ring focus:ring-inset focus:ring-neutral-800  text-gray-600 mb-4">
-            @error('payment')
-                @foreach($errors->get('payment') as $error)
-                    <div class="-mt-4 mb-3 font-light text-red-500 text-sm">{{ $error }}</div>
-                @endforeach
-            @enderror
-        </div>
+     
         <button class="w-max bg-green-600 rounded-md py-2 px-3 text-neutral-100 shadow-md shadow-neutral-400">Registrar Venda</button>
     </form>
     <a href="{{ route('cart.index') }}" class="bg-blue-500 rounded-md py-2 px-3 text-neutral-100 mt-4 shadow-md shadow-neutral-400">Voltar ao Carrinho de Compras</a>

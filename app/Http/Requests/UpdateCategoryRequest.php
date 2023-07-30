@@ -26,9 +26,9 @@ class UpdateCategoryRequest extends FormRequest
         $id = Route::getCurrentRoute()->parameter('category');
 
         return [
-            'code' => [
-                'required',
+            'code' => ['required',
                 'numeric',
+                'max_digits:255',
                 Rule::unique('categories', 'code')->ignore($id)
             ],
             'name' => [

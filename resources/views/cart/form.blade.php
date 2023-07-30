@@ -7,13 +7,13 @@
         @csrf() 
         @method('DELETE')
     </form>
-    <form action="{{ route('cart.addItem') }}" method="POST" class="flex flex-col border rounded-md shadow-md p-5 bg-gray-50 mb-8">
+    @if(session()->has('message'))
+        <div>{{ session()->get('message') }}</div>
+    @endif
+    <form action="{{ route('cart.addItem') }}" method="post" class="flex flex-col sm:flex-row border rounded-md shadow-md p-5 bg-gray-50 mb-8">
         @csrf
-        @if(session()->has('message'))
-            <div>{{ session()->get('message') }}</div>
-        @endif
-        <div>
-            <label for="product_code" class="block text-neutral-900 mb-2">Código do Produto</label>
+        <div class="sm:w-2/4 sm:me-4">
+            <label for="product_code" class="block text-neutral-900 mb-2 whitespace-nowrap">Código do Produto</label>
             <input type="text" id="product_code" name="product_code" value="{{ old('product_code') }}" class="w-full p-2 rounded-md border-0 outline-0 ring-1 ring-inset ring-gray-300 focus:ring focus:ring-inset focus:ring-neutral-800  text-gray-600 mb-4">
             @error('product_code')
                 @foreach($errors->get('product_code') as $error)
@@ -21,7 +21,7 @@
                 @endforeach
             @enderror
         </div>
-        <div>
+        <div class="sm:w-1/4 sm:me-4">
             <label for="quantity" class="block text-neutral-900 mb-2">Quantidade</label>
             <input type="number" id="quantity" name="quantity" value="{{ old('quantity') }}" class="w-full p-2 rounded-md border-0 outline-0 ring-1 ring-inset ring-gray-300 focus:ring focus:ring-inset focus:ring-neutral-800  text-gray-600 mb-4">
             @error('quantity')
@@ -30,7 +30,9 @@
                 @endforeach
             @enderror
         </div>
-        <button class="w-max bg-green-600 rounded-md py-2 px-3 text-neutral-100 shadow-md shadow-neutral-400">Adicionar ao Carrinho</button>
+        <div>
+            <button class="w-max bg-blue-500 rounded-md py-2 px-3 sm:mt-8 text-neutral-100 shadow-md shadow-neutral-400">Adicionar ao Carrinho</button>
+        </div>
     </form>
     <div class="overflow-auto mb-8 rounded-md shadow-md shadow-neutral-400">
         <table class="w-full border border-collapse bg-gray-100 text-neutral-700">
@@ -50,7 +52,7 @@
                         <td class="py-1 text-center">{{ $item->getProduct()->description }}</td>
                         <td class="py-1 text-center">{{ $item->getQuantity() }}</td>
                         <td class="py-1 text-center">{{ $item->getProduct()->sale_price }}</td>
-                        <td class="py-1 text-center border w-16">
+                        <td class="py-1 text-center border">
                             <button type="submit" form="form-remove" formaction="{{ route('cart.removeItem', ['item' => $item->getProduct()->id]) }}" title="remover">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5m6 4.125l2.25 2.25m0 0l2.25 2.25M12 13.875l2.25-2.25M12 13.875l-2.25 2.25M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
@@ -59,8 +61,8 @@
                         </td>
                     </tr>
                 @endforeach
-                <tr class="border border-e hover:bg-gray-50 text-neutral-500">
-                    <td colspan="3" class="py-1 text-center font-bold border">Total</td>
+                <tr class="border text-neutral-500">
+                    <th scope="row" colspan="3" class="py-3 bg-gray-200 text-center font-bold border">Total</th>
                     <td class="font-bold text-center">
                         {{ $cart->getTotal() }}
                     </td>

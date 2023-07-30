@@ -49,7 +49,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
     //Rotas de Recursos de Produtos
     Route::get('/produtos/por-categoria', [ProductController::class, 'findByCategory'])
-    ->name('products.by.category');
+    ->name('products.byCategory');
 
     Route::resource('produtos', ProductController::class)->except([
         'show'
@@ -90,20 +90,20 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
     //Rotas de Recursos de Compras/Aquisições
     Route::controller(PurchaseSessionController::class)->group(function () {
-        Route::get('compras/registrar', 'create')->name('purchases.create');
-        Route::post('compras/adicionar-item', 'addItem')->name('purchases.addItem');
+        Route::get('compras/adicionar-itens', 'create')->name('purchases.createItems');
+        Route::post('compras/adicionar-itens', 'addItem')->name('purchases.addItem');
         Route::delete('compras/remover-item/{item}', 'removeItem')->name('purchases.removeItem');
     });
 
     Route::get('compras/por-periodo', [PurchaseController::class, 'getPurchasesByPeriod'])->name('purchases.period');
 
     Route::resource('compras',PurchaseController::class)->except([
-        'create',
         'edit',
         'update'
     ])->names([
         'index' => 'purchases.index',
         'store' => 'purchases.store',
+        'create' => 'purchases.create',
         'show' => 'purchases.show',
         'destroy' => 'purchases.destroy'
     ])->parameters([

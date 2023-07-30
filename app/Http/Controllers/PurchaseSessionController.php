@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\AddItemPurchaseRequest;
 use App\Models\PurchaseItemSessionHandler;
-use Exception;
 use App\Models\PurchaseSessionHandler;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -16,7 +15,7 @@ class PurchaseSessionController extends Controller
     {
         Session::regenerate();
         $purchase = new PurchaseSessionHandler();
-        return view('purchase.createForm', [
+        return view('purchase.addItemsForm', [
             'title' => 'Penedo | Registrar Compra',
             'purchase' => $purchase
         ]);
@@ -24,48 +23,33 @@ class PurchaseSessionController extends Controller
 
     public function addItem(AddItemPurchaseRequest $request): RedirectResponse
     {
-        try {
+        $itemHandler = new PurchaseItemSessionHandler();
 
-            $itemHandler = new PurchaseItemSessionHandler();
+        $itemHandler->setCode($request->get('code'));
+        $itemHandler->setDescription($request->get('description'));
+        $itemHandler->setPrice($request->get('price'));
+        $itemHandler->setQuantity($request->get('quantity'));
 
-            $itemHandler->setCode($request->get('code'));
-            $itemHandler->setDescription($request->get('description'));
-            $itemHandler->setPrice($request->get('price'));
-            $itemHandler->setQuantity($request->get('quantity'));
+        $purchaseHandler = new PurchaseSessionHandler();
+        $purchaseHandler->addItem($itemHandler);
 
-            $purchaseHandler = new PurchaseSessionHandler();
+        Session::flash('message', 'Item adicionado com sucesso');
 
-            $purchaseHandler->addItem($itemHandler);
-
-            $message = 'Item adicionado com sucesso';
-            
-        } catch (Exception $e) {
-            $message = 'Erro, Não foi possível adicionar o item à compra';
-        }
-
-        Session::flash('message', $message);
-
-        return redirect()->route('purchases.create');
+        return redirect()->route('purchases.createItems');
     }
 
     public function removeItem($code): RedirectResponse
     {
-        try {
-            $purchaseHandler = new PurchaseSessionHandler();
-            if (!$purchaseHandler->hasItem($code)) {
-                throw new Exception('Erro, não foi possível remover, item não encontrado');
-            }
-
-            $purchaseHandler->removeItem($code);
-
-            $message = 'Item removido com sucesso';
-
-        } catch (Exception $e) {
-            $message = $e->getMessage();
+        $purchaseHandler = new PurchaseSessionHandler();
+        if (!$purchaseHandler->hasItem($code)) {
+            Session::flash('Erro, não foi possível remover, item não encontrado');
+            return redirect()->route('purchases.createItems');
         }
 
-        Session::flash('message', $message);
+        $purchaseHandler->removeItem($code);
 
-        return redirect()->route('purchases.create');
+        Session::flash('message', 'Item removido com sucesso');
+
+        return redirect()->route('purchases.createItems');
     }
 }

@@ -6,6 +6,7 @@ use Exception;
 use App\Models\User;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\RedirectResponse;
 use App\Http\Requests\StoreUserRequest;
 use Illuminate\Support\Facades\Session;
@@ -18,15 +19,11 @@ class UserController extends Controller
      */
     public function index(): View
     {
-        try {
-            $users = User::paginate(15);
-        } catch (Exception $e) {
-            $message = 'Erro, não foi possível obter a lista de usuários.';
-        }
+        $users = User::paginate(15);
+        
         return view('user.list', [
             'title' => 'Penedo | Lista de Usuários',
             'users' => $users ?? [],
-            'message' => $message ?? null
         ]);
     }
 
@@ -50,12 +47,9 @@ class UserController extends Controller
             $user = new User();
             $user->name = $request->get('name');
             $user->email = $request->get('email');
-            $user->password = $request->get('password');
-            
-            if ($request->get('is_admin')) {
-                $user->is_admin = $request->get('is_admin');  
-            }
-            
+            $user->password = $request->get('password');    
+            $user->is_admin = $request->get('is_admin');  
+        
             $user->save();
         
             DB::commit();
@@ -74,18 +68,8 @@ class UserController extends Controller
      */
     public function edit(string $id)
     {
-        try {
-            $user = User::query()->find($id);
-
-            if (empty($user)) {
-                Session::flash('message', 'Não foi possível editar, usuário não encontrado.');
-                return redirect()->route('users.index');
-            }
-        } catch (Exception $e) {
-            Session::flash('message', 'Erro, Não foi possível editar usuário.');
-            return redirect()->route('users.index');
-        }
-
+        $user = User::query()->findOrFail($id);
+          
         return view('user.editForm', [
             'title' => 'Penedo | Editar Usuário',
             'user' => $user
@@ -97,31 +81,35 @@ class UserController extends Controller
      */
     public function update(UpdateUserRequest $request, string $id): RedirectResponse
     {
+        $user = User::query()->findOrFail($id);
+
         try {
             DB::beginTransaction();
-            $user = User::query()->find($id);
-            
-            if (empty($user)) {
-                Session::flash('message', 'Não foi possível editar, usuário não encontrado.');
-                return redirect()->route('users.index');
-            }
 
             $user->name = $request->get('name');
             $user->email = $request->get('email');
             $user->password = $request->get('password');
-            
-            if ($request->get('is_admin')) {
+
+            if ($request->has('is_admin')) {
                 $user->is_admin = $request->get('is_admin');  
+            } else {
+                $user->is_admin = $user->is_admin;
             }
-            
+                        
             $user->save();
 
             DB::commit();
+
             Session::flash('message', 'Usuário atualizado com sucesso.');
+
+            if (Auth::user()->id == $user->id) {
+                return redirect()->route('auth.logout');
+            }
+            
         } catch (Exception $e) {
             DB::rollBack();
-            Session::flash('message', 'Erro, não foi possível editar usuário.');
-            return redirect()->route('users.edit');
+            Session::flash('message', "Erro, não foi possível atualizar usuário");
+            return redirect()->back();
         }
 
         return redirect()->route('users.index');
@@ -132,24 +120,20 @@ class UserController extends Controller
      */
     public function destroy(string $id)
     {
+        $user = User::query()->findOrFail($id);
+
         try {
             DB::beginTransaction();
-            $user = User::find($id);
-
-            if (empty($user)) {
-                Session::flash('message', 'Erro, o usuário informado não foi encontrado.');
-                return redirect()->route('users.index');
-            }
 
             $user->delete();
+            
             DB::commit();
-            $message = 'Usuário removido com sucesso.';   
+            Session::flash('message', 'Usuário removido com sucesso.');   
         } catch (Exception $e) {
-            $message = 'Erro, não foi possível remover usuário.';
+            Session::flash('message', 'Erro, não foi possível remover usuário.');
             DB::rollBack();
         }
 
-        Session::flash('message', $message);
         return redirect()->route('users.index');
     }
 }

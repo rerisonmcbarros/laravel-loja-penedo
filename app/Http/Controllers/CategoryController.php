@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use \Exception;
+use Exception;
 use App\Models\Category;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Contracts\View\View;
@@ -18,16 +18,11 @@ class CategoryController extends Controller
      */
     public function index(): View
     {
-        try {
-            $categories = Category::paginate(15);
-        } catch (Exception $e) {
-            $message = "Erro, não foi possível obter a lista de categorias";
-        }
+        $categories = Category::orderBy('name')->paginate(15);
 
         return view('category.list', [
             'title' => 'Penedo | Lista de Categorias',
             'categories' => $categories ?? [],
-            'message' => $message ?? null,
         ]);  
     }
 
@@ -53,15 +48,13 @@ class CategoryController extends Controller
             $category->name = $request->get('name');
             $category->save();
 
-            $message = 'Categoria cadastrada com sucesso';
             DB::commit();
+            Session::flash('message', 'Categoria cadastrada com sucesso');
         } catch (Exception $e) {
-            $message = 'Erro, não foi possível cadastrar a categoria';
+            Session::flash('message', 'não foi possível cadastrar a categoria');
             DB::rollBack();
         }
         
-        Session::flash('message', $message);
-
         return redirect()->route('categories.create');
     }
 
@@ -69,20 +62,9 @@ class CategoryController extends Controller
      * Show the form for editing the specified resource.
      */
     public function edit(string $id): View|RedirectResponse
-    {
-        try {
-            $category = Category::query()->find($id);
-
-            if (empty($category)) {
-                Session::flash('message', 'A categoria informada não foi encontrada');
-                return redirect()->route('categories.index');
-            }
-
-        } catch (Exception $e) {
-           Session::flash('message', 'Erro, não foi possível editar a categoria');
-           return redirect()->route('categories.index');
-        }
-
+    {  
+        $category = Category::query()->findOrFail($id);
+    
         return view('category.editForm', [
             'title' => 'Penedo | Editar Categoria',
             'category' => $category ?? null,
@@ -94,22 +76,20 @@ class CategoryController extends Controller
      */
     public function update(UpdateCategoryRequest $request, string $id): RedirectResponse
     {
+        $category = Category::query()->findOrFail($id);
+
         try {
             DB::beginTransaction();
-            
-            $category = Category::query()->find($id);
+
             $category->name = $request->get('name');
             $category->save();
 
-            $message = 'Categoria atualizada com sucesso';
-
             DB::commit();
+            Session::flash('message', 'Categoria atualizada com sucesso');
         } catch (Exception $e) {
-            $message = 'Erro, Não foi possível atualizar a categoria';
+            Session::flash('message', 'Erro, Não foi possível atualizar a categoria');
             DB::rollBack();    
         }
-
-        Session::flash('message', $message);
 
         return redirect()->route('categories.edit', ['category' => $id]);
     }
@@ -119,19 +99,15 @@ class CategoryController extends Controller
      */
     public function destroy(string $id): RedirectResponse
     {   
+        $category = Category::query()->findOrFail($id);
+
         try {
             DB::beginTransaction();
-            $category = Category::find($id);
-
-            if (empty($category)) {
-                Session::flash('message', 'A categoria informada não foi encontrada');
-                return redirect()->route('categories.index');
-            }
 
             $category->delete();
 
-            Session::flash('message', 'Categoria removida com sucesso!');
             DB::commit();
+            Session::flash('message', 'Categoria removida com sucesso!');
         } catch (Exception $e) {
             Session::flash('message', 'Erro, não foi possível remover a categoria');
             DB::rollBack();

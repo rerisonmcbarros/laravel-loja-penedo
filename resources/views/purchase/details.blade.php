@@ -7,17 +7,14 @@
         <table class="w-full border border-collapse bg-gray-100 text-neutral-700">
             <thead class="border bg-gray-200">
                 <tr>
-                    <th scope="col" class="p-3 text-center">Fornecedor</th>
-                    <th scope="col" class="p-3 text-center">Nota Fiscal</th>
-                    <th scope="col" class="p-3 text-center">Data</th>
-                    <th scope="col" class="p-3 text-center"></th>
+                    <th scope="col" colspan="2" class="p-3 text-center">Fornecedor</th>
+                    <th scope="col" colspan="2" class="p-3 text-center">Nota Fiscal</th>
                 </tr>  
             </thead>
             <tbody>
                 <tr class="border hover:bg-gray-50">
-                    <td class="py-3 text-center">{{ $purchase->supplier }}</td>
-                    <td class="py-3 text-center">{{ $purchase->invoice }}</td>
-                    <td class="py-3 text-center">{{ $purchase->created_at }}</td>
+                    <td colspan="2" class="py-3 text-center">{{ $purchase->supplier }}</td>
+                    <td colspan="2" class="py-3 text-center">{{ $purchase->invoice }}</td>
                 </tr>
                 <tr class="border bg-gray-200">
                     <th class="p-3 text-center" colspan="5" scope="col">Itens</th>

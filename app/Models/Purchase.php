@@ -23,6 +23,11 @@ class Purchase extends Model
         );
     }
 
+    public function getDateBr(): string
+    {
+        return date('d/m/Y h:i:s', strtotime($this->created_at));
+    }
+
     public function items(): HasMany 
     {
         return $this->hasMany(PurchaseItem::class, 'purchase_id', 'id');

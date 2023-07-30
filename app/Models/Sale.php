@@ -23,6 +23,11 @@ class Sale extends Model
         );
     }
 
+    public function getDateBr(): string
+    {
+        return date('d/m/Y h:i:s', strtotime($this->created_at));
+    }
+
     public function setTotalValueWithDiscount()
     {
         $this->total_value = $this->total_value - ($this->total_value * ($this->discount/100));

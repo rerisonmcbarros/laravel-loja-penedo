@@ -10,36 +10,38 @@
             <div>{{ $message }}</div>
         @endif
         <form  id="find-by-period" action="{{ route('sales.period') }}" method="get" class="flex flex-col border rounded-md shadow-md p-5 bg-gray-50 mb-8">
-            <fieldset>
-                <legend class="mb-3">Buscar por Período</legend>
-                <div>
+            <fieldset class="sm:flex">
+                <legend class="w-full mb-3 text-lg">Buscar por Período</legend>
+                <div class="sm:w-1/3 sm:me-4">
                     <label for="data_inicio" class="block text-neutral-900 mb-2">Data início</label>
                     <input type="date" id="data_inicio" name="data_inicio" class="w-full p-2 rounded-md border-0 outline-0 ring-1 ring-inset ring-gray-300 focus:ring focus:ring-inset focus:ring-neutral-800  text-gray-600 mb-4">
+                    @error('data_inicio')
+                        @foreach($errors->get('data_inicio') as $error)
+                            <div class="-mt-4 mb-3 font-light text-red-500 text-sm">{{ $error }}</div>
+                        @endforeach
+                    @enderror
                 </div>
-                @error('data_inicio')
-                    @foreach($errors->get('data_inicio') as $error)
-                        <div class="-mt-4 mb-3 font-light text-red-500 text-sm">{{ $error }}</div>
-                    @endforeach
-                @enderror
-                <div>
+                <div class="sm:w-1/3 sm:me-4">
                     <label for="data_fim" class="block text-neutral-900 mb-2">Data fim</label>
-                    <input type="date" id="data_fim" name="data_fim" class="w-full p-2 rounded-md border-0 outline-0 ring-1 ring-inset ring-gray-300 focus:ring focus:ring-inset focus:ring-neutral-800  text-gray-600 mb-4">
+                    <input type="date" id="data_fim" name="data_fim" class="w-full p-2 rounded-md border-0 outline-0 ring-1 ring-inset ring-gray-300 focus:ring focus:ring-inset focus:ring-neutral-800  text-gray-600 mb-4"> 
+                    @error('data_fim')
+                        @foreach($errors->get('data_fim') as $error)
+                            <div class="-mt-4 mb-3 font-light text-red-500 text-sm">{{ $error }}</div>
+                        @endforeach
+                    @enderror
                 </div>
-                @error('data_fim')
-                    @foreach($errors->get('data_fim') as $error)
-                        <div class="-mt-4 mb-3 font-light text-red-500 text-sm">{{ $error }}</div>
-                    @endforeach
-                @enderror
-                <button form="find-by-period" class="w-max bg-blue-500 rounded-md py-2 px-3 text-neutral-100 mt-2 shadow-md shadow-neutral-400">Buscar</button>
+                <div>
+                    <button form="find-by-period" class="bg-blue-500 rounded-md py-2 px-3 sm:mt-8 text-neutral-100 shadow-md shadow-neutral-400">Buscar</button>                
+                </div>
             </fieldset> 
         </form>
 
         <div class="overflow-auto mb-8 rounded-md shadow-md shadow-neutral-400">
-            <form id="form-remove" method="POST">
+            <form id="form-remove" method="post">
                 @csrf() 
                 @method('DELETE')
             </form>
-            <form id="form-show" method="POST">
+            <form id="form-show" method="post">
                 @csrf() 
                 @method('GET')
             </form>
@@ -62,8 +64,8 @@
                                 <td class="py-1 text-center">{{ $sale->total_value }}</td>
                                 <td class="py-1 text-center">{{ $sale->discount }}</td>
                                 <td class="py-1 text-center">{{ $sale->payment }}</td>
-                                <td class="py-1 text-center">{{ $sale->created_at }}</td>
-                                <td class="py-1 text-center border w-16">
+                                <td class="py-1 text-center">{{ $sale->getDateBr() }}</td>
+                                <td class="py-1 text-center border">
                                     <button type="submit" form="form-show" formaction="{{ route('sales.show', ['sale' => $sale->id]) }}" title="ver detalhes">
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />

@@ -26,7 +26,12 @@ class UpdateProductRequest extends FormRequest
         $id = Route::getCurrentRoute()->parameter('product');
         return [
             'category_id' => ['required'],
-            'code' => ['required', Rule::unique('products', 'code')->ignore($id), 'numeric', 'max:255'],
+            'code' => [
+                'required', 
+                Rule::unique('products', 'code')->ignore($id), 
+                'numeric', 
+                'max_digits:255'
+            ],
             'description' => ['required', 'max:255'],
             'purchase_price' => ['required', 'numeric'],
             'sale_price' => ['required', 'numeric'],

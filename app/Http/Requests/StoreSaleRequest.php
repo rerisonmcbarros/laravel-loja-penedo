@@ -30,16 +30,6 @@ class StoreSaleRequest extends FormRequest
         ];
     }
 
-    public function messages()
-    {
-        return [
-            'required' => 'O campo :attribute não pode ser vazio.',
-            'numeric' => 'O campo :attribute deve ser um valor numérico.',
-            'integer' => 'O campo :attribute deve ser um valor numérico inteiro.',
-            'max' => 'O campo :attribute deve ter no máximo :max caracteres.'
-        ];
-    }
-
     public function attributes()
     {
         return [

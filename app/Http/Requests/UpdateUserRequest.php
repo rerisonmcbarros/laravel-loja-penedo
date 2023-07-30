@@ -28,7 +28,7 @@ class UpdateUserRequest extends FormRequest
         return [
             'name' => ['required', 'max:255'],
             'email' => ['required', Rule::unique('users', 'email')->ignore($userId), 'max:255'],
-            'password' => ['required', Password::min(8)->letters()->numbers(), 'max:255'],
+            'password' => ['nullable', Password::min(8)->letters()->numbers(), 'max:255'],
             'is_admin' => ['nullable', 'boolean', 'min:0', 'max:1']
         ];
     }
