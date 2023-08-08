@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Http\RedirectResponse;
 use App\Http\Requests\StoreUserRequest;
 use Illuminate\Support\Facades\Session;
@@ -83,19 +84,19 @@ class UserController extends Controller
     {
         $user = User::query()->findOrFail($id);
 
+        if(Gate::denies('update', $user)) {
+            Session::flash('message', 'Não foi possível atualizar usuário');
+            return redirect()->route('users.index');
+        }
+
         try {
             DB::beginTransaction();
 
             $user->name = $request->get('name');
             $user->email = $request->get('email');
             $user->password = $request->get('password');
-
-            if ($request->has('is_admin')) {
-                $user->is_admin = $request->get('is_admin');  
-            } else {
-                $user->is_admin = $user->is_admin;
-            }
-                        
+            $user->is_admin = $request->get('is_admin');  
+            
             $user->save();
 
             DB::commit();
@@ -121,6 +122,11 @@ class UserController extends Controller
     public function destroy(string $id)
     {
         $user = User::query()->findOrFail($id);
+
+        if(Gate::denies('delete', $user)) {
+            Session::flash('message', 'Não foi possível remover usuário');
+            return redirect()->route('users.index');
+        };
 
         try {
             DB::beginTransaction();
